@@ -1,20 +1,26 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
-// TODO: change out all 'pet' data for recipes
-export async function GET(request: Request) {
-	const { searchParams } = new URL(request.url);
-	const petName = searchParams.get('petName');
-	const ownerName = searchParams.get('ownerName');
+import { execute, RECIPE_DATA } from '../../_lib/script.mjs';
 
-	try {
-		if (!petName || !ownerName)
-			throw new Error('Pet and owner names required');
-		await sql`INSERT INTO recipes (id, title, page, servings, body) VALUES (${petName}, ${ownerName});`;
-	} catch (error) {
-		return NextResponse.json({ error }, { status: 500 });
+// SELECT DISTINCT body ->> 'text' FROM recipes WHERE id='part01_sub016_02';
+
+execute();
+
+export async function GET(request: Request) {
+	for (let i = 0; i < RECIPE_DATA.length; i++) {
+		const { id, title, section, page, servings, body } = RECIPE_DATA[i];
+
+		try {
+			if (!id) throw new Error('ERROR WITH ID');
+			await sql`INSERT INTO recipes (id, title, section, page, servings, body) VALUES (${id}, ${title}, ${section}, ${page}, ${servings}, ${JSON.stringify(
+				body
+			)});`;
+		} catch (error) {
+			return NextResponse.json({ error }, { status: 500 });
+		}
 	}
 
-	const pets = await sql`SELECT * FROM recipes;`;
-	return NextResponse.json({ pets }, { status: 200 });
+	const recipes = await sql`SELECT * FROM recipes;`;
+	return NextResponse.json({ recipes }, { status: 200 });
 }

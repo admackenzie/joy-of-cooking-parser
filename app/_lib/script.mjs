@@ -3,7 +3,18 @@ import { parse } from 'node-html-parser';
 
 import { getElementSiblings, getPageNumbers, cleanText } from './utils.mjs';
 
-const FILE = 'Joy of Cooking';
+// TODO: refactor into TypeScript
+// interface Recipe {
+// 	id: string;
+// 	title: string;
+// 	section: string;
+// 	page: string;
+// 	servings: string;
+// 	body: { text: string[], links: string[] };
+// }
+// [];
+
+const FILE = 'app/_lib/Joy of Cooking';
 const TOTAL_RECIPES = 2591;
 const RECIPE_DATA = [];
 
@@ -32,6 +43,8 @@ const getData = function (url) {
 	const html = parse(file);
 
 	// 2) Isolate recipes into recipe arrays. DOM methods can't be run on arrays of HTML elements, so each recipe is turned back into a string to be parsed individually in step 3
+	const section = cleanText(html.querySelector('title').innerText);
+
 	const recipesHTML = [];
 
 	html.querySelectorAll('.h3rec').forEach(el => {
@@ -64,6 +77,7 @@ const getData = function (url) {
 
 		recipe['id'] = id;
 		recipe['title'] = title;
+		recipe['section'] = section;
 		recipe['page'] = idxData[title] || null;
 		recipe['servings'] = getElText('.noindentl');
 
@@ -137,9 +151,11 @@ const getData = function (url) {
 	return recipes;
 };
 
-// const test = getData(`${FILE_PATH.url}/part01.xhtml`);
+// const test = getData(`${FILE_PATH.url}/part18.xhtml`);
 
 // ---- EXECUTE SCRIPT ----
+
+let str = `INSERT INTO recipes ([id], [title], [section], [page], [servings], [body]) VALUES`;
 
 const execute = function () {
 	const beginScript = Date.now();
@@ -162,9 +178,9 @@ const execute = function () {
 		} seconds`
 	);
 
-	// fs.writeFileSync('DATA_JSON.json', JSON.stringify(RECIPE_DATA));
+	// fs.writeFileSync('RECIPE_DATA.json', JSON.stringify(RECIPE_DATA));
 };
 
 // execute();
 
-export { FILE_PATH };
+export { execute, FILE_PATH, RECIPE_DATA };
