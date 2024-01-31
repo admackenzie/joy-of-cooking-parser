@@ -1,8 +1,64 @@
-import Image from 'next/image'
+// import Image from 'next/image'
+'use client';
+
+const PATH = 'app/_lib/Joy of Cooking/e9781439130827/xhtml';
+const CREATE_FILE = true;
+
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+	const [dir, setDir] = useState<FileList>();
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		// TODO: add better error handling
+		if (!dir) return;
+
+		try {
+			const data = new FormData();
+
+			// Add recipe files
+			Array.from(dir)
+				.filter(file => file.name.startsWith('part'))
+				.forEach(file => data.append('recipes', file));
+
+			// Add index files
+			Array.from(dir)
+				.filter(file => file.name.startsWith('index'))
+				.forEach(file => data.append('indices', file));
+
+			// Create json results file
+			CREATE_FILE && data.append('createFile', 'true');
+
+			// Response
+			const res = await fetch('/api/upload', {
+				method: 'POST',
+				body: data,
+			});
+			// handle the error
+			if (!res.ok) throw new Error(await res.text());
+		} catch (e: any) {
+			// Handle errors here
+			console.error(e);
+		}
+	};
+
+	return (
+		<form onSubmit={handleSubmit}>
+			<input
+				type="file"
+				name="file"
+				onChange={e => setDir(e.target.files)}
+				directory=""
+				webkitdirectory=""
+			/>
+
+			<input type="submit" value="Upload" />
+		</form>
+	);
+
+	/*     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
           Get started by editing&nbsp;
@@ -108,6 +164,5 @@ export default function Home() {
           </p>
         </a>
       </div>
-    </main>
-  )
+    </main> */
 }

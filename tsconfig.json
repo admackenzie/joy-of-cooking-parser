@@ -27,6 +27,7 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
+		"app/_lib/script_OLD.mjs",
 		"app/_lib/script.mjs"
 	],
 	"exclude": ["node_modules"]
