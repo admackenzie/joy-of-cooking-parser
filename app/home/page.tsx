@@ -6,6 +6,15 @@ const CREATE_FILE = false;
 
 import { useState } from 'react';
 
+//  Allows File API directory upload without error
+declare module 'react' {
+	interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+		// extends React's HTMLAttributes
+		directory?: string;
+		webkitdirectory?: string;
+	}
+}
+
 export default function Home() {
 	const [dir, setDir] = useState<FileList>();
 
@@ -63,7 +72,7 @@ export default function Home() {
 			<input
 				type="file"
 				name="file"
-				onChange={e => setDir(e.target.files)}
+				onChange={e => setDir(e.target.files ?? undefined)}
 				directory=""
 				webkitdirectory=""
 			/>
