@@ -1,8 +1,7 @@
 import { readFile, writeFile } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getData } from '@/app/_lib/script';
-import { getPageNumbers } from '@/app/_lib/utils.mjs';
+import { getData, getPageNumbers } from '@/app/lib/utils';
 
 export async function POST(request: NextRequest) {
 	const RECIPE_DATA = [];
@@ -28,6 +27,7 @@ export async function POST(request: NextRequest) {
 	// BUG: page data is all null
 	// BUG: recipeDir is being read in wrong order
 	// BUG: deleting the local JoC directory breaks the whole app
+	// BUG: node console hangs after writing document
 
 	const idxData = getPageNumbers(idxDir);
 
