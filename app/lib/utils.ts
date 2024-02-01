@@ -82,38 +82,12 @@ const getPageNumbers = async function (dir) {
 				key = key.replace(/.$/, '');
 			}
 
-			pages[key] = value;
+			// Remove non-numerical page numbers
+			if (!/[a-z]/gi.test(value)) {
+				pages[key] = value;
+			}
 		});
 	}
-
-	// const { filesDir, url } = FILE_PATH;
-
-	// const indexFiles = filesDir.filter(file => file.startsWith('index'));
-
-	// // Iterate through all the index files
-	// for (let i = 0; i < dir.length; i++) {
-	// 	const file = fs.readFileSync(`${url}/${indexFiles[i]}`);
-	// 	const html = parse(file);
-
-	// 	// Query only elements with an id of idxX_YYYY
-	// 	const listEls = html.querySelectorAll('[id*="idx"]');
-
-	// 	// Extract name and page number
-	// 	listEls.forEach(idxEl => {
-	// 		const pageData = idxEl
-	// 			.querySelectorAll('span, a')
-	// 			.map(el => el.textContent.trim().toUpperCase());
-
-	// 		let [key, value] = pageData;
-
-	// 		// Remove trailing , and .
-	// 		if (key.at(-1) === ',' || key.at(-1) === '.') {
-	// 			key = key.replace(/.$/, '');
-	// 		}
-
-	// 		pages[key] = value;
-	// 	});
-	// }
 
 	return pages;
 };

@@ -26,10 +26,9 @@ export async function POST(request: NextRequest) {
 	// -------------------------------------------------
 	// BUG: page data is all null
 	// BUG: recipeDir is being read in wrong order
-	// BUG: deleting the local JoC directory breaks the whole app
 	// BUG: node console hangs after writing document
 
-	const idxData = getPageNumbers(idxDir);
+	const idxData = await getPageNumbers(idxDir);
 
 	for await (const file of Array.from(recipeDir)) {
 		const byteArr = await file.arrayBuffer();
