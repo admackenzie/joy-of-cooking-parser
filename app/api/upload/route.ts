@@ -24,12 +24,10 @@ export async function POST(request: NextRequest) {
 	}
 
 	// -------------------------------------------------
-	// BUG: page data is all null
-	// BUG: recipeDir is being read in wrong order
-	// BUG: node console hangs after writing document
 
 	const idxData = await getPageNumbers(idxDir);
 
+	// Main loop
 	for await (const file of Array.from(recipeDir)) {
 		const byteArr = await file.arrayBuffer();
 		const page = Buffer.from(byteArr).toString();
@@ -44,7 +42,7 @@ export async function POST(request: NextRequest) {
 	// Write data into JSON file
 
 	if (createFile) {
-		writeFile('TESTTESTTEST.json', JSON.stringify(RECIPE_DATA));
+		writeFile('RECIPES.json', JSON.stringify(RECIPE_DATA));
 	}
 
 	const endScript = Date.now();

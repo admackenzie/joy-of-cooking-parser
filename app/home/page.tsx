@@ -2,7 +2,7 @@
 'use client';
 
 const PATH = 'app/_lib/Joy of Cooking/e9781439130827/xhtml';
-const CREATE_FILE = true;
+const CREATE_FILE = false;
 
 import { useState } from 'react';
 
@@ -21,6 +21,20 @@ export default function Home() {
 			// Add recipe files
 			Array.from(dir)
 				.filter(file => file.name.startsWith('part'))
+				// Sort files to the order they appear in the ebook
+				.sort((a, b) => {
+					// Handle files with alphanumeric indices (e.g., part09a.xhtml)
+					const fileIdx = (f: File) => {
+						const idx =
+							f.name.match(/(?<=part).*(?=\.)/i)?.at(0) ?? '';
+
+						return /[a-z]/i.test(idx)
+							? +idx.slice(0, -1) + idx.charCodeAt(2) / 100
+							: +idx;
+					};
+
+					return fileIdx(a) - fileIdx(b);
+				})
 				.forEach(file => data.append('recipes', file));
 
 			// Add index files
@@ -28,7 +42,7 @@ export default function Home() {
 				.filter(file => file.name.startsWith('index'))
 				.forEach(file => data.append('indices', file));
 
-			// Create json results file
+			// Create JSON results file
 			CREATE_FILE && data.append('createFile', 'true');
 
 			// Response
