@@ -1,19 +1,5 @@
 import { parse } from 'node-html-parser';
 
-/** func-1 ----------------------------------------------------------------
- * Remove new line characters and replace groups of \t with a space to keep the adjoining words separate.
- * @param {string} text
- * @returns {string}
- */
-/* const cleanText = function (text) {
-	return text
-		.replace(/\r\n|\n|\r/gm, '')
-		.replace(/\t{2,}/gm, ' ')
-		.trim();
-}; */
-
-// func-2 ----------------------------------------------------------------
-
 // Takes an HTML element as the starting point and an array of string selectors as the stopping point. Iterates through HTML putting all starting el's siblings into an array until it finds an el with a selector attribute. Includes the starting el and excludes the end el. The selectors do not need CSS syntax (e.g., . for class and # for id).
 const getElementSiblings = function (el: Element, selectors: string[] = []) {
 	const siblings = [];
