@@ -28,13 +28,13 @@ interface PageNumberData {
 	[key: string]: string;
 }
 
-const getPageNumbers = async function (dir: FileList) {
+const getPageNumbers = async function (dir: string[]) {
 	const pages: PageNumberData = {};
 
-	for await (const file of Array.from(dir)) {
-		const byteArr = await file.arrayBuffer();
-		const page = Buffer.from(byteArr).toString();
-
+	// for await (const file of Array.from(dir)) {
+	// 	const byteArr = await file.arrayBuffer();
+	// 	const page = Buffer.from(byteArr).toString();
+	dir.forEach(page => {
 		const html = parse(page);
 
 		// Query only elements with an id of idxX_YYYY
@@ -58,7 +58,7 @@ const getPageNumbers = async function (dir: FileList) {
 				pages[key] = value;
 			}
 		});
-	}
+	});
 
 	return pages;
 };
@@ -81,11 +81,6 @@ interface Recipe {
 const getData = function (file: string, idxData: PageNumberData) {
 	// FIXME: rename recipesPage ??
 	const recipes: Recipe[] = [];
-
-	// 1) Import HTML file as a string
-	// const file = fs.readFileSync(path, {
-	// 	encoding: 'utf-8',
-	// });
 
 	const pageDOM = parse(file);
 
@@ -154,4 +149,32 @@ const getData = function (file: string, idxData: PageNumberData) {
 	return recipes;
 };
 
-export { getPageNumbers, getElementSiblings, getData };
+/**
+ * @param dir - JSZip instance of unzipped files
+ * @param re - regex for filtering files
+ * @param sort - choose to use the sorting function
+ * @returns an array of promises
+ */
+const getFiles = (dir: any, re: string, sort = false) => {
+	return dir
+		.file(new RegExp(`${re}`))
+		.sort((a: any, b: any) => {
+			if (!sort) return;
+
+			// Handle files with alphanumeric indices (e.g., part09a.xhtml)
+			const fileIdx = (f: any) => {
+				const idx =
+					f.name.match(new RegExp(`(?<=${re}).*(?=.xhtml)`))?.at(0) ??
+					'';
+
+				return /[a-z]/i.test(idx)
+					? +idx.slice(0, -1) + idx.charCodeAt(2) / 100
+					: +idx;
+			};
+
+			return fileIdx(a) - fileIdx(b);
+		})
+		.map((file: any) => file.async('string'));
+};
+
+export { getPageNumbers, getElementSiblings, getData, getFiles };

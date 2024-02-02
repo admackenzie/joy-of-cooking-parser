@@ -1,57 +1,58 @@
-import { readFile, writeFile } from 'fs/promises';
+import { writeFile } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
+import JSZip from 'jszip';
 
-import { getData, getPageNumbers } from '@/app/lib/utils';
+import { getData, getFiles, getPageNumbers } from '@/app/lib/utils';
 
 export async function POST(request: NextRequest) {
-	const RECIPE_DATA = [];
-	const beginScript = Date.now();
+	const BEGIN_SCRIPT = Date.now();
 
+	// Get data from FormData object
 	const formData = await request.formData();
-
-	const recipeDir: FileList | null = formData.getAll(
-		'recipes'
-	) as unknown as FileList;
-
-	const idxDir: FileList | null = formData.getAll(
-		'indices'
-	) as unknown as FileList;
-
+	const zipped: File | null = formData.get('file') as unknown as File;
 	const createFile: Boolean = formData.has('createFile');
 
+	// Convert the File object into ArrayBuffer to load into JSZIP. Creates a JSZip instance with the file data (still compressed as Uint8Array )
+	const unzipped = await JSZip.loadAsync(zipped.arrayBuffer());
+
+	// Array of HTML pages as strings (partXXX.xhtml)
+	const recipeDir = await Promise.all(getFiles(unzipped, 'part', true));
+	// Array of HTML pages as strings (indexXX.xhtml)
+	const idxDir = await Promise.all(getFiles(unzipped, 'index'));
+	// Object of title : page
+	const idxData = await getPageNumbers(idxDir);
+	// Main array for Recipe objects
+	const recipes: any = [];
+
+	// TODO: Implement better error handling (big error)
 	if (!recipeDir || !idxDir) {
 		return NextResponse.json({ success: false });
 	}
 
-	// -------------------------------------------------
+	// Get all Recipes from each page
+	recipeDir.forEach(file => {
+		const data = getData(file, idxData);
 
-	const idxData = await getPageNumbers(idxDir);
+		recipes.push(...data);
+	});
 
-	// Main loop
-	for await (const file of Array.from(recipeDir)) {
-		const byteArr = await file.arrayBuffer();
-		const page = Buffer.from(byteArr).toString();
-
-		const data = getData(page, idxData);
-
-		RECIPE_DATA.push(...data);
-	}
-
-	// ------------------------------------
-
-	// Write data into JSON file
-
+	// Write data to a JSON file
 	if (createFile) {
-		writeFile('RECIPES.json', JSON.stringify(RECIPE_DATA));
+		writeFile('RECIPES.json', JSON.stringify(recipes));
 	}
 
-	const endScript = Date.now();
+	const END_SCRIPT = Date.now();
 
-	const successMessage: string = `Parsed ${RECIPE_DATA.length} recipes in ${
-		(endScript - beginScript) / 1000
+	const successMessage: string = `Parsed ${recipes.length} recipes in ${
+		(END_SCRIPT - BEGIN_SCRIPT) / 1000
 	} seconds.`;
 
+	// FIXME: remove for production
 	console.log(successMessage);
 
-	return NextResponse.json({ success: true });
+	// TODO: improve response or at least read it somewhere in the client
+	return NextResponse.json({
+		success: true,
+		message: successMessage,
+	});
 }
