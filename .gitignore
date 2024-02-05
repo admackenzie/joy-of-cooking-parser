@@ -35,5 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+<<<<<<< Updated upstream
 # data
 /app/_lib/Joy of Cooking
+=======
+.vscode/settings.json
+>>>>>>> Stashed changes
