@@ -19,6 +19,7 @@
 # misc
 .DS_Store
 *.pem
+.vscode/settings.json
 
 # debug
 npm-debug.log*
@@ -35,9 +36,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-<<<<<<< Updated upstream
-# data
-/app/_lib/Joy of Cooking
-=======
-.vscode/settings.json
->>>>>>> Stashed changes
+
