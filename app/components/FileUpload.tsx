@@ -5,7 +5,7 @@
 import { useRef, useState } from 'react';
 
 // Make this a global variable?? Used to write final JSON output
-const CREATE_FILE = false;
+const CREATE_FILE = true;
 
 export default function FileUpload() {
 	const [dragActive, setDragActive] = useState<Boolean>(false);
