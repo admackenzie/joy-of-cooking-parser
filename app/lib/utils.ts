@@ -108,7 +108,7 @@ const getRecipeData = (file: string, pageData: pageData) => {
 			.join('');
 		const servings: Recipe['servings'] = head.at(1)?.textContent ?? null;
 		const page: Recipe['page'] = pageData[title!] || null;
-		// Join HTML strings of the head and body with a non-breaking space
+		// Join HTML strings of the head and body with an em space (\u2003) to avoid conflict with non-breaking space characters (\u00a0)
 		const html: Recipe['html'] = [head, body]
 			.map(arr => {
 				return arr
@@ -116,7 +116,7 @@ const getRecipeData = (file: string, pageData: pageData) => {
 					.join('')
 					.trim();
 			})
-			.join('\u00a0');
+			.join('\u2003');
 
 		// Add Recipe object to the file's output array
 		fileData.push({
