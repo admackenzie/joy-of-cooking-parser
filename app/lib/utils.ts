@@ -99,7 +99,7 @@ const getRecipeData = (file: string, pageData: pageData) => {
 		const [head, body] = splitRecipe(recipe);
 
 		// Extract data from elements
-		const id: Recipe['id'] = head.at(0)?.id!;
+		const id: Recipe['id'] = head.at(0).id.match(/\d+/g).join('');
 		const title: Recipe['title'] = head.at(0)?.textContent!;
 		const category: Recipe['category'] =
 			fileDOM.querySelector('title')!.textContent;
