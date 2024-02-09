@@ -46,7 +46,7 @@ const getPageData = async (dir: string[]) => {
 interface Recipe {
 	id: string;
 	title: string;
-	section: string;
+	category: string;
 	bodyText: string;
 	servings: string | null;
 	page: string | null;
@@ -101,7 +101,7 @@ const getRecipeData = (file: string, pageData: pageData) => {
 		// Extract data from elements
 		const id: Recipe['id'] = head.at(0)?.id!;
 		const title: Recipe['title'] = head.at(0)?.textContent!;
-		const section: Recipe['section'] =
+		const category: Recipe['category'] =
 			fileDOM.querySelector('title')!.textContent;
 		const bodyText: Recipe['bodyText'] = body
 			.map((el: Element) => el.textContent!.trim())
@@ -122,7 +122,7 @@ const getRecipeData = (file: string, pageData: pageData) => {
 		fileData.push({
 			id: id,
 			title: title,
-			section: section,
+			category: category,
 			bodyText: bodyText,
 			servings: servings,
 			page: page,
