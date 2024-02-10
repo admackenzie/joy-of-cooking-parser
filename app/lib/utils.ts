@@ -46,7 +46,7 @@ const getPageData = async (dir: string[]) => {
 interface Recipe {
 	id: string;
 	title: string;
-	category: string;
+	chapter: string;
 	bodyText: string;
 	servings: string | null;
 	page: string | null;
@@ -101,14 +101,13 @@ const getRecipeData = (file: string, pageData: pageData) => {
 		// Extract data from elements
 		const id: Recipe['id'] = head.at(0).id.match(/\d+/g).join('');
 		const title: Recipe['title'] = head.at(0)?.textContent!;
-		const category: Recipe['category'] =
+		const chapter: Recipe['chapter'] =
 			fileDOM.querySelector('title')!.textContent;
 		const bodyText: Recipe['bodyText'] = body
 			.map((el: Element) => el.textContent!.trim())
 			.join('');
 		const servings: Recipe['servings'] = head.at(1)?.textContent ?? null;
 		const page: Recipe['page'] = pageData[title!] || null;
-		// Join HTML strings of the head and body with an em space (\u2003) to avoid conflict with non-breaking space characters (\u00a0)
 		const html: Recipe['html'] = [head, body]
 			.map(arr => {
 				return arr
@@ -116,13 +115,14 @@ const getRecipeData = (file: string, pageData: pageData) => {
 					.join('')
 					.trim();
 			})
+			// Join HTML strings of the head and body with an em space (\u2003) to avoid conflict with non-breaking space characters (\u00a0)
 			.join('\u2003');
 
 		// Add Recipe object to the file's output array
 		fileData.push({
 			id: id,
 			title: title,
-			category: category,
+			chapter: chapter,
 			bodyText: bodyText,
 			servings: servings,
 			page: page,
