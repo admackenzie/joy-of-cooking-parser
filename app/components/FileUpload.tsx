@@ -1,7 +1,5 @@
 'use client';
 
-// test
-
 // FIXME: does there need to be a check for malicious code before the archive is sent to the server?? (Zip Slip Vulnerability?)
 
 import { useRef, useState } from 'react';
